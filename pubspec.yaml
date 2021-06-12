@@ -1,6 +1,8 @@
 name: define_env
-description: Generate dart defines from .env file
-version: 0.1.0
+description: >
+  Load environment variables from a `.env` file and converts it into a dart-define string. You can
+  optionally copy the config to VS Code or to the clipboard.
+version: 0.1.1
 homepage: https://github.com/ibrahim-mubarak/define-env
 
 environment:
@@ -10,3 +12,6 @@ dependencies:
   args: ^2.1.1
   console: ^4.1.0
   dotenv: ^3.0.0
+
+dev_dependencies: 
+  test: ^1.17.7

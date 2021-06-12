@@ -13,7 +13,7 @@ optionally copy the config to VS Code or to the clipboard.
 
 [dartdocs-badge]: https://img.shields.io/badge/dartdocs-reference-blue.svg
 
-[dartdocs]: http://www.dartdocs.org/documentation/define_env/latest
+[dartdocs]: https://www.dartdocs.org/documentation/define_env/latest
 
 ### Usage
 

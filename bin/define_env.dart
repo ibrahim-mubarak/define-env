@@ -85,6 +85,10 @@ void _usage() =>
 String convertEnvMapToDartDefineString(Map<String, String> msg) {
   StringBuffer buffer = StringBuffer();
   msg.forEach((key, value) {
+    if (value.contains(" ")) {
+      value = '"$value"';
+    }
+
     buffer.write("--dart-define=$key=$value ");
   });
   var string = buffer.toString();

@@ -95,16 +95,8 @@ List<String> _splitDartDefine(String? dartDefineString) {
     return [];
   }
 
-  var defineEnvSeparator = " define_env ";
-  return dartDefineString.split(" ").expand((element) {
-    if (element.startsWith("--dart-define")) {
-      return element
-          .replaceAll(
-            "--dart-define=",
-            "--dart-define$defineEnvSeparator",
-          )
-          .split(defineEnvSeparator);
-    }
-    return [element];
+  return (dartDefineString.split("--dart-define=")..removeAt(0))
+      .expand((element) {
+    return ["--dart-define", element.trim()];
   }).toList();
 }
