@@ -5,13 +5,7 @@ Load environment variables from a `.env` file and converts it into a dart-define
 optionally copy the config to VS Code or to the clipboard.
 
 [![Pub Version][pub-badge]][pub]
-[![Build Status][ci-badge]][ci]
 [![Documentation][dartdocs-badge]][dartdocs]
-
-
-[ci-badge]: https://github.com/ibrahim-mubarak/define_env/workflows/define_env/badge.svg
-
-[ci]: https://github.com/ibrahim-mubarak/define_env/actions
 
 [pub-badge]: https://img.shields.io/pub/v/define_env.svg
 
@@ -32,7 +26,7 @@ $ dart pub global activate define_env
 #### Print
 
 ```sh
-$ dart pub global run define_env      # # generate dart define string and print it to stdout
+$ dart pub global run define_env      # generate dart define string and print it to stdout
 ```
 
 You can skip printing using the `--no-print` flag
@@ -72,6 +66,7 @@ Use the [issue tracker][tracker] for bug reports and feature requests.
 
 ### Roadmap
 
-- Add support for Android Studio and Intellij
-- Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config
-- Add validation support against `.env.example` to see warn if any environment variable is missing
+- [ ] Add support for Android Studio and Intellij
+- [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config
+- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing
+- [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc
