@@ -21,7 +21,7 @@ optionally copy the config to VS Code or to the clipboard.
 
 [dartdocs]: http://www.dartdocs.org/documentation/define_env/latest
 
-### usage
+### Usage
 
 Get the latest version from pub:
 
@@ -56,7 +56,7 @@ configuration, you can do the following
 $ dart pub global run define_env -l -n staging     # generate dart define string and copy it to "staging" configuration in launch.json
 ```
 
-*Note*
+**Note**
 
 - `launch.json` may sometimes contain comments. These comments cannot be preserved as of now. If
   this is important then you should avoid this package
@@ -64,7 +64,7 @@ $ dart pub global run define_env -l -n staging     # generate dart define string
   the dart-define statements. This is not thoroughly tested and if you face problems with additional
   arguments please create an issue.
 
-### discussion
+### Discussion
 
 Use the [issue tracker][tracker] for bug reports and feature requests.
 
