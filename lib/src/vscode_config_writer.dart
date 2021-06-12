@@ -94,7 +94,7 @@ List<String> _splitDartDefine(String? dartDefineString) {
   if (dartDefineString == null) {
     return [];
   }
-  // --dart-define=MY_VAR=MY_VALUE --dart-define=MY_OTHER_VAR=MY_OTHER_VALUE --profile
+
   var defineEnvSeparator = " define_env ";
   return dartDefineString.split(" ").expand((element) {
     if (element.startsWith("--dart-define")) {

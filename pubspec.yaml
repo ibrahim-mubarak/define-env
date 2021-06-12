@@ -1,13 +1,12 @@
 name: define_env
-description: Generate dart defines from .env file and print
-version: 0.0.1
-homepage:
+description: Generate dart defines from .env file
+version: 0.1.0
+homepage: https://github.com/ibrahim-mubarak/define-env
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
+  args: ^2.1.1
   console: ^4.1.0
   dotenv: ^3.0.0
-
-#dev_dependencies:
