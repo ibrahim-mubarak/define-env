@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
+import 'package:define_env/src/android_studio_config_writer.dart';
 import 'package:dotenv/dotenv.dart' as dotEnv;
 
 final _argPsr = new ArgParser()
@@ -32,10 +33,16 @@ final _argPsr = new ArgParser()
     help: 'Add to VS Code launch.json',
     negatable: false,
   )
+  ..addFlag(
+    'android-studio',
+    abbr: 'a',
+    help: 'Add to Android Studio run config',
+    negatable: false,
+  )
   ..addOption(
     'config-name',
     abbr: 'n',
-    help: 'Configuration name in vscode launch.json',
+    help: 'Configuration name to use in IDE',
   );
 
 void main(List<String> argv) {
@@ -58,11 +65,19 @@ void main(List<String> argv) {
   }
 
   if (opts['vscode']) {
-    addToVsCode(
-      launchJsonPath: '.vscode/launch.json',
-      configuration: opts['config-name'],
+    VscodeConfigWriter(
       dartDefineString: dartDefineString,
-    );
+      configName: opts['config-name'],
+      projectPath: '.',
+    ).call();
+  }
+
+  if (opts['android-studio']) {
+    AndroidStudioConfigWriter(
+      dartDefineString: dartDefineString,
+      configName: opts['config-name'],
+      projectPath: '.',
+    ).call();
   }
 }
 

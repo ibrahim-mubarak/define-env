@@ -12,6 +12,7 @@ dependencies:
   args: ^2.1.1
   console: ^4.1.0
   dotenv: ^3.0.0
+  xml: ^5.1.2
 
 dev_dependencies: 
   test: ^1.17.7

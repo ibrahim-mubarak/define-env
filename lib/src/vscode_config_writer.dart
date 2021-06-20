@@ -1,102 +1,94 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:define_env/define_env.dart';
+import 'package:define_env/src/config_writer.dart';
 
-/// If configuration is null, update all configurations
-void addToVsCode({
-  required String launchJsonPath,
-  String? configuration,
-  required String dartDefineString,
-}) {
-  checkFileExists(launchJsonPath);
+class VscodeConfigWriter extends ConfigWriter {
+  VscodeConfigWriter({
+    required String projectPath,
+    required String dartDefineString,
+    required String? configName,
+  }) : super(
+          projectPath: projectPath,
+          dartDefineString: dartDefineString,
+          configName: configName,
+        );
 
-  var launchJsonFile = File(launchJsonPath);
-  var oldLaunchConfigString = launchJsonFile
-      .readAsStringSync()
-      // launch.json usually contains comments, which is not valid json.
-      .replaceAll(RegExp('.+//.+\n'), "");
+  @override
+  List<File> getMandatoryFilesToUpdate() => [
+        File(projectPath + "/.vscode/launch.json"),
+      ];
 
-  var launchConfig = jsonDecode(oldLaunchConfigString);
+  @override
+  List<File> getOptionalFilesToUpdate() => [];
 
-  var newConfigList = updateConfigList(
-    configList: launchConfig['configurations'] as List,
-    configurationName: configuration,
-    dartDefineList: _splitDartDefine(dartDefineString),
-  );
+  @override
+  String writeConfig(String fileContent) {
+    /// launch.json usually contains comments, which is valid only in JSON5.
+    /// At this point however we cannot preserve these comments.
+    fileContent = fileContent.replaceAll(RegExp('.+//.+\n'), "");
 
-  launchConfig['configurations'] = newConfigList;
-  var newConfigJson = _prettyJson(launchConfig);
-  launchJsonFile.writeAsStringSync(newConfigJson);
-}
+    var configJson = jsonDecode(fileContent);
 
-List<dynamic> updateConfigList({
-  required List<dynamic> configList,
-  required String? configurationName,
-  required List<String> dartDefineList,
-}) {
-  return configList.map((configMap) {
-    if (configurationName == null || configMap['name'] == configurationName) {
-      List oldArgs = configMap['args'] ?? [];
-      List retainedArgs = [];
-      bool previousWasDartDefine = false;
-      for (int i = 0; i < oldArgs.length; i++) {
-        if (oldArgs[i] == '--dart-define') {
-          previousWasDartDefine = true;
-          continue;
-        }
+    var configList = (configJson['configurations'] as Iterable);
 
-        if (!previousWasDartDefine) {
-          retainedArgs.add(oldArgs[i]);
-        }
+    if (configName != null) {
+      configList = configList.where((config) => config['name'] == configName);
+    }
 
-        previousWasDartDefine = false;
+    var dartDefineList = splitDartDefine(dartDefineString);
+
+    configJson['configurations'] =
+        configList.map((configMap) => updateConfig(configMap, dartDefineList));
+
+    return prettifyJson(configJson);
+  }
+
+  Map<String, dynamic> updateConfig(
+    Map<String, dynamic> configMap,
+    List<String> newDartDefineList,
+  ) {
+    return configMap.update(
+      'args',
+      (value) => getNonDartDefineArguments(value).followedBy(newDartDefineList),
+      ifAbsent: () => newDartDefineList,
+    );
+  }
+
+  String prettifyJson(dynamic json) {
+    var spaces = ' ' * 2;
+    var encoder = JsonEncoder.withIndent(spaces);
+    return encoder.convert(json);
+  }
+
+  /// Take [argList] and return only non dart define arguments from the list
+  List<dynamic> getNonDartDefineArguments(List<dynamic> argList) {
+    bool previousWasDartDefine = false;
+
+    List retainedArgs = [];
+    argList.forEach((arg) {
+      if (arg == '--dart-define') {
+        previousWasDartDefine = true;
+        return;
       }
 
-      configMap['args'] = [...retainedArgs, ...dartDefineList];
-    }
+      if (!previousWasDartDefine) {
+        retainedArgs.add(arg);
+      }
 
-    return configMap;
-  }).toList();
-}
-
-String joinArgs(List<dynamic>? args) {
-  if (args == null) return "";
-
-  StringBuffer buffer = StringBuffer();
-
-  args.forEach((element) {
-    buffer.write(element);
-
-    if (element == '--dart-define') {
-      buffer.write("=");
-      return;
-    }
-
-    buffer.write(" ");
-  });
-
-  var argsString = buffer.toString();
-  if (argsString.endsWith(" ")) {
-    argsString = argsString.substring(0, argsString.length - 1);
+      previousWasDartDefine = false;
+    });
+    return retainedArgs;
   }
 
-  return argsString;
-}
+  List<String> splitDartDefine(String? dartDefineString) {
+    if (dartDefineString == null) {
+      return [];
+    }
 
-String _prettyJson(dynamic json) {
-  var spaces = ' ' * 2;
-  var encoder = JsonEncoder.withIndent(spaces);
-  return encoder.convert(json);
-}
-
-List<String> _splitDartDefine(String? dartDefineString) {
-  if (dartDefineString == null) {
-    return [];
+    return (dartDefineString.split("--dart-define=")..removeAt(0))
+        .expand((element) {
+      return ["--dart-define", element.trim()];
+    }).toList();
   }
-
-  return (dartDefineString.split("--dart-define=")..removeAt(0))
-      .expand((element) {
-    return ["--dart-define", element.trim()];
-  }).toList();
 }

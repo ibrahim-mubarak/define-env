@@ -16,3 +16,11 @@ void checkFileExists(String file) {
     exit(-1);
   }
 }
+
+void checkDirectoryExists(String file) {
+  if (!Directory(file).existsSync()) {
+    Console.setTextColor(Color.RED.id);
+    Console.write("$file not found\n");
+    exit(-1);
+  }
+}
