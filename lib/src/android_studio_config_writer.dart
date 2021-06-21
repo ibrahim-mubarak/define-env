@@ -79,7 +79,14 @@ class AndroidStudioConfigWriter extends ConfigWriter {
     var oldArguments = option.getAttribute('value')!;
     var retainedArgs = getRetainedArgs(oldArguments);
 
-    option.setAttribute('value', retainedArgs + " " + dartDefineString);
+    option.setAttribute(
+      'value',
+
+      /// We are trimming here because retained arguments can be empty
+      /// and because of that our dart-defines will not be parsed properly
+      /// because of the extra spaces
+      (retainedArgs + " " + dartDefineString).trim(),
+    );
   }
 
   /// Remove all dart-defines from [oldArguments] and return whatever is remaining.

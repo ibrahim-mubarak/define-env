@@ -1,3 +1,7 @@
+## 0.2.0+2
+
+- Fixed: Fix target file not found error in Android Studio when there are no retained arguments
+
 ## 0.2.0+1
 
 - Changed: Updated README and documentation.

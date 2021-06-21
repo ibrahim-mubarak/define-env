@@ -1,7 +1,7 @@
 name: define_env
 description: >
   Load variables from a `.env` file into a dart-define string and copy it to your IDE Config or to the clipboard.
-version: 0.2.0+1
+version: 0.2.0+2
 homepage: https://github.com/ibrahim-mubarak/define-env
 
 environment:
