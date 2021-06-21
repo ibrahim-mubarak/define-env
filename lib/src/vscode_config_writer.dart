@@ -3,7 +3,15 @@ import 'dart:io';
 
 import 'package:define_env/src/config_writer.dart';
 
+/// [ConfigWriter] for VS Code.
+///
+/// This [ConfigWriter] takes the launch.json file, reads it and retains non dart-define arguments.
+/// The new dart-define string generated from the .env file is appended to the retained arguments.
 class VscodeConfigWriter extends ConfigWriter {
+
+  /// [projectPath] is the path to VS Code project. It should contain the '.vscode/launch.json' file.
+  /// [dartDefineString] is the dart-define string which is to be written to the config
+  /// [configName] is the name of an existing configuration in launch.json. A config is not created if it is not found.
   VscodeConfigWriter({
     required String projectPath,
     required String dartDefineString,
@@ -36,7 +44,7 @@ class VscodeConfigWriter extends ConfigWriter {
       configList = configList.where((config) => config['name'] == configName);
     }
 
-    var dartDefineList = splitDartDefine(dartDefineString);
+    var dartDefineList = getDartDefineList();
 
     configJson['configurations'] =
         configList.map((configMap) => updateConfig(configMap, dartDefineList));
@@ -44,17 +52,19 @@ class VscodeConfigWriter extends ConfigWriter {
     return prettifyJson(configJson);
   }
 
+  /// Update a single VS Code [config] with [dartDefineList].
   Map<String, dynamic> updateConfig(
-    Map<String, dynamic> configMap,
-    List<String> newDartDefineList,
+    Map<String, dynamic> config,
+    Iterable<String> dartDefineList,
   ) {
-    return configMap.update(
+    return config.update(
       'args',
-      (value) => getNonDartDefineArguments(value).followedBy(newDartDefineList),
-      ifAbsent: () => newDartDefineList,
+      (value) => getNonDartDefineArguments(value).followedBy(dartDefineList),
+      ifAbsent: () => dartDefineList,
     );
   }
 
+  /// Pretty Print [json]
   String prettifyJson(dynamic json) {
     var spaces = ' ' * 2;
     var encoder = JsonEncoder.withIndent(spaces);
@@ -62,6 +72,8 @@ class VscodeConfigWriter extends ConfigWriter {
   }
 
   /// Take [argList] and return only non dart define arguments from the list
+  ///
+  /// This is useful when you have arguments such as --profile or --release.
   List<dynamic> getNonDartDefineArguments(List<dynamic> argList) {
     bool previousWasDartDefine = false;
 
@@ -81,14 +93,9 @@ class VscodeConfigWriter extends ConfigWriter {
     return retainedArgs;
   }
 
-  List<String> splitDartDefine(String? dartDefineString) {
-    if (dartDefineString == null) {
-      return [];
-    }
-
+  /// Splits the dart-define string into a list format as required by VS Code.
+  Iterable<String> getDartDefineList() {
     return (dartDefineString.split("--dart-define=")..removeAt(0))
-        .expand((element) {
-      return ["--dart-define", element.trim()];
-    }).toList();
+        .expand((element) => ["--dart-define", element.trim()]);
   }
 }

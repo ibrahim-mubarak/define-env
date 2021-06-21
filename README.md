@@ -84,7 +84,9 @@ Use the [issue tracker][tracker] for bug reports and feature requests.
 
 ## Roadmap
 
-- [x] Add support for Android Studio and Intellij
-- [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config
-- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing
-- [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc
+- [x] Add support for Android Studio and Intellij.
+- [ ] Make Android Studio and VS Code extensions and plugins to update config automatically when `.env` files are updated. 
+- [ ] Generate `Config` class from `.env` files which extract values from environment. 
+- [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config.
+- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing.
+- [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc.

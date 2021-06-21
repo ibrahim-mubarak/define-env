@@ -3,7 +3,15 @@ import 'dart:io';
 import 'package:define_env/src/config_writer.dart';
 import 'package:xml/xml.dart';
 
+/// [ConfigWriter] for Android Studio and Intellij IDEs.
+///
+/// This [ConfigWriter] reads all xml files containing Run configuration and retains non dart-define arguments.
+/// The new dart-define string generated from the .env file is appended to the retained arguments.
 class AndroidStudioConfigWriter extends ConfigWriter {
+  /// [projectPath] is the path to Android Studio project.
+  /// It should contain the '.idea/workspace.xml' file or '.run/*.xml' files
+  /// [dartDefineString] is the dart-define string which is to be written to the config
+  /// [configName] is the name of an existing configuration in launch.json. A config is not created if it is not found.
   AndroidStudioConfigWriter({
     required String projectPath,
     required String dartDefineString,
@@ -56,25 +64,32 @@ class AndroidStudioConfigWriter extends ConfigWriter {
   bool isXmlElementSameAsConfig(XmlElement element) =>
       element.getAttribute('name') == configName;
 
-  void updateAndroidStudioConfiguration(XmlElement configurationNode) {
-    configurationNode
-        .findAllElements('option')
-        .where(elementHasArgs)
-        .forEach(updateElement);
-  }
+  void updateAndroidStudioConfiguration(XmlElement configurationNode) =>
+      configurationNode
+          .findAllElements('option')
+          .where(elementHasArgs)
+          .forEach(updateElement);
 
+  /// Checks if [element] has 'additionalArgs'. We should ideally check for 'attachArgs' too I suppose.
   bool elementHasArgs(XmlElement element) =>
       element.getAttribute('name') == 'additionalArgs';
 
-  void updateElement(XmlElement element) {
-    var oldArguments = element.getAttribute('value')!;
+  /// Update the Configuration [option] with new dart-define while preserving old arguments.
+  void updateElement(XmlElement option) {
+    var oldArguments = option.getAttribute('value')!;
+    var retainedArgs = getRetainedArgs(oldArguments);
+
+    option.setAttribute('value', retainedArgs + " " + dartDefineString);
+  }
+
+  /// Remove all dart-defines from [oldArguments] and return whatever is remaining.
+  String getRetainedArgs(String oldArguments) {
     var retainedArgs = oldArguments
         .replaceAll("&quot;", "\"")
         .replaceAll(RegExp('--dart-define=[^ "]+(["\'])([^"\'])+(["\'])'), '')
         .replaceAll(RegExp('--dart-define=[^ "]+'), '')
         .replaceAll(RegExp('\s+'), ' ')
         .trim();
-
-    element.setAttribute('value', retainedArgs + " " + dartDefineString);
+    return retainedArgs;
   }
 }
