@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:args/args.dart';
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
@@ -61,7 +59,7 @@ void main(List<String> argv) {
   }
 
   if (opts['copy']) {
-    copyToClipboard(dartDefineString);
+    copyToPlatformClipboard(dartDefineString);
   }
 
   if (opts['vscode']) {
@@ -81,49 +79,17 @@ void main(List<String> argv) {
   }
 }
 
-void copyToClipboard(String content) {
-  if (Platform.isMacOS) {
-    doPbCopy(content).then((value) {
-      Console.setBackgroundColor(Color.GREEN.id);
-      Console.setTextColor(Color.BLACK.id);
-      Console.write('\tCopied to clipboard\t\n');
-    });
-    return;
-  }
-
-  copyToClipboardLinux(content);
+void copyToPlatformClipboard(String dartDefineString) {
+  copyToClipboard(dartDefineString).then((value) {
+    Console.setBackgroundColor(Color.GREEN.id);
+    Console.setTextColor(Color.BLACK.id);
+    Console.write('\tCopied to clipboard\t\n');
+  }).onError((error, stackTrace) {
+    Console.setBackgroundColor(Color.RED.id);
+    Console.setTextColor(Color.WHITE.id);
+    Console.write('\Could not copied to clipboard: $error\t\n');
+  });
 }
 
 void _usage() =>
     print('\nUsage: pub global run define_env \n\n${_argPsr.usage}\n');
-
-String convertEnvMapToDartDefineString(Map<String, String> msg) {
-  StringBuffer buffer = StringBuffer();
-  msg.forEach((key, value) {
-    if (value.contains(" ")) {
-      value = '"$value"';
-    }
-
-    buffer.write("--dart-define=$key=$value ");
-  });
-  var string = buffer.toString();
-  var finalStringToPrintAndCopy = string.substring(0, string.length - 1);
-  return finalStringToPrintAndCopy;
-}
-
-Future doPbCopy(String content) {
-  return Process.start('/usr/bin/pbcopy', []).then((process) {
-    process.stdin.write(content);
-    process.stdin.close();
-  });
-}
-
-void copyToClipboardLinux(String content) {
-  var clipboard = getClipboard();
-  if (clipboard == null) {
-    Console.write("Could not copy to clipboard");
-    return;
-  }
-
-  clipboard.setContent(content);
-}

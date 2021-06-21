@@ -1,8 +1,7 @@
 define_env
 ======
 
-Load environment variables from a `.env` file and converts it into a dart-define string. You can
-optionally copy the config to VS Code or to the clipboard.
+Load variables from a `.env` file into a dart-define string and copy it to your IDE Config or to the clipboard.
 
 [![Pub Version][pub-badge]][pub]
 [![Documentation][dartdocs-badge]][dartdocs]

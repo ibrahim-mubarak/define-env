@@ -8,7 +8,6 @@ import 'package:define_env/src/config_writer.dart';
 /// This [ConfigWriter] takes the launch.json file, reads it and retains non dart-define arguments.
 /// The new dart-define string generated from the .env file is appended to the retained arguments.
 class VscodeConfigWriter extends ConfigWriter {
-
   /// [projectPath] is the path to VS Code project. It should contain the '.vscode/launch.json' file.
   /// [dartDefineString] is the dart-define string which is to be written to the config
   /// [configName] is the name of an existing configuration in launch.json. A config is not created if it is not found.

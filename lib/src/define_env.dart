@@ -9,6 +9,20 @@ void loadEnvFromFile(String file) {
   Platform.environment.forEach((key, value) => dotEnv.env.remove(key));
 }
 
+String convertEnvMapToDartDefineString(Map<String, String> envMap) {
+  StringBuffer buffer = StringBuffer();
+  envMap.forEach((key, value) {
+    if (value.contains(" ")) {
+      value = '"$value"';
+    }
+
+    buffer.write("--dart-define=$key=$value ");
+  });
+  var string = buffer.toString();
+  var finalStringToPrintAndCopy = string.substring(0, string.length - 1);
+  return finalStringToPrintAndCopy;
+}
+
 void checkFileExists(String file) {
   if (!File(file).existsSync()) {
     Console.setTextColor(Color.RED.id);
