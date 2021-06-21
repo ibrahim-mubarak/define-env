@@ -9,6 +9,7 @@
 .history
 .svn/
 .env
+.run/
 .vscode
 
 # IntelliJ related

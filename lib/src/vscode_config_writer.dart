@@ -1,102 +1,101 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:define_env/define_env.dart';
+import 'package:define_env/src/config_writer.dart';
 
-/// If configuration is null, update all configurations
-void addToVsCode({
-  required String launchJsonPath,
-  String? configuration,
-  required String dartDefineString,
-}) {
-  checkFileExists(launchJsonPath);
+/// [ConfigWriter] for VS Code.
+///
+/// This [ConfigWriter] takes the launch.json file, reads it and retains non dart-define arguments.
+/// The new dart-define string generated from the .env file is appended to the retained arguments.
+class VscodeConfigWriter extends ConfigWriter {
 
-  var launchJsonFile = File(launchJsonPath);
-  var oldLaunchConfigString = launchJsonFile
-      .readAsStringSync()
-      // launch.json usually contains comments, which is not valid json.
-      .replaceAll(RegExp('.+//.+\n'), "");
+  /// [projectPath] is the path to VS Code project. It should contain the '.vscode/launch.json' file.
+  /// [dartDefineString] is the dart-define string which is to be written to the config
+  /// [configName] is the name of an existing configuration in launch.json. A config is not created if it is not found.
+  VscodeConfigWriter({
+    required String projectPath,
+    required String dartDefineString,
+    required String? configName,
+  }) : super(
+          projectPath: projectPath,
+          dartDefineString: dartDefineString,
+          configName: configName,
+        );
 
-  var launchConfig = jsonDecode(oldLaunchConfigString);
+  @override
+  List<File> getMandatoryFilesToUpdate() => [
+        File(projectPath + "/.vscode/launch.json"),
+      ];
 
-  var newConfigList = updateConfigList(
-    configList: launchConfig['configurations'] as List,
-    configurationName: configuration,
-    dartDefineList: _splitDartDefine(dartDefineString),
-  );
+  @override
+  List<File> getOptionalFilesToUpdate() => [];
 
-  launchConfig['configurations'] = newConfigList;
-  var newConfigJson = _prettyJson(launchConfig);
-  launchJsonFile.writeAsStringSync(newConfigJson);
-}
+  @override
+  String writeConfig(String fileContent) {
+    /// launch.json usually contains comments, which is valid only in JSON5.
+    /// At this point however we cannot preserve these comments.
+    fileContent = fileContent.replaceAll(RegExp('.+//.+\n'), "");
 
-List<dynamic> updateConfigList({
-  required List<dynamic> configList,
-  required String? configurationName,
-  required List<String> dartDefineList,
-}) {
-  return configList.map((configMap) {
-    if (configurationName == null || configMap['name'] == configurationName) {
-      List oldArgs = configMap['args'] ?? [];
-      List retainedArgs = [];
-      bool previousWasDartDefine = false;
-      for (int i = 0; i < oldArgs.length; i++) {
-        if (oldArgs[i] == '--dart-define') {
-          previousWasDartDefine = true;
-          continue;
-        }
+    var configJson = jsonDecode(fileContent);
 
-        if (!previousWasDartDefine) {
-          retainedArgs.add(oldArgs[i]);
-        }
+    var configList = (configJson['configurations'] as Iterable);
 
-        previousWasDartDefine = false;
+    if (configName != null) {
+      configList = configList.where((config) => config['name'] == configName);
+    }
+
+    var dartDefineList = getDartDefineList();
+
+    configJson['configurations'] =
+        configList.map((configMap) => updateConfig(configMap, dartDefineList));
+
+    return prettifyJson(configJson);
+  }
+
+  /// Update a single VS Code [config] with [dartDefineList].
+  Map<String, dynamic> updateConfig(
+    Map<String, dynamic> config,
+    Iterable<String> dartDefineList,
+  ) {
+    return config.update(
+      'args',
+      (value) => getNonDartDefineArguments(value).followedBy(dartDefineList),
+      ifAbsent: () => dartDefineList,
+    );
+  }
+
+  /// Pretty Print [json]
+  String prettifyJson(dynamic json) {
+    var spaces = ' ' * 2;
+    var encoder = JsonEncoder.withIndent(spaces);
+    return encoder.convert(json);
+  }
+
+  /// Take [argList] and return only non dart define arguments from the list
+  ///
+  /// This is useful when you have arguments such as --profile or --release.
+  List<dynamic> getNonDartDefineArguments(List<dynamic> argList) {
+    bool previousWasDartDefine = false;
+
+    List retainedArgs = [];
+    argList.forEach((arg) {
+      if (arg == '--dart-define') {
+        previousWasDartDefine = true;
+        return;
       }
 
-      configMap['args'] = [...retainedArgs, ...dartDefineList];
-    }
+      if (!previousWasDartDefine) {
+        retainedArgs.add(arg);
+      }
 
-    return configMap;
-  }).toList();
-}
-
-String joinArgs(List<dynamic>? args) {
-  if (args == null) return "";
-
-  StringBuffer buffer = StringBuffer();
-
-  args.forEach((element) {
-    buffer.write(element);
-
-    if (element == '--dart-define') {
-      buffer.write("=");
-      return;
-    }
-
-    buffer.write(" ");
-  });
-
-  var argsString = buffer.toString();
-  if (argsString.endsWith(" ")) {
-    argsString = argsString.substring(0, argsString.length - 1);
+      previousWasDartDefine = false;
+    });
+    return retainedArgs;
   }
 
-  return argsString;
-}
-
-String _prettyJson(dynamic json) {
-  var spaces = ' ' * 2;
-  var encoder = JsonEncoder.withIndent(spaces);
-  return encoder.convert(json);
-}
-
-List<String> _splitDartDefine(String? dartDefineString) {
-  if (dartDefineString == null) {
-    return [];
+  /// Splits the dart-define string into a list format as required by VS Code.
+  Iterable<String> getDartDefineList() {
+    return (dartDefineString.split("--dart-define=")..removeAt(0))
+        .expand((element) => ["--dart-define", element.trim()]);
   }
-
-  return (dartDefineString.split("--dart-define=")..removeAt(0))
-      .expand((element) {
-    return ["--dart-define", element.trim()];
-  }).toList();
 }

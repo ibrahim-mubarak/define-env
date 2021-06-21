@@ -1,3 +1,8 @@
+## 0.2.0
+
+- Added: Experimental Support for Android Studio Workspace and Run Configs
+- Changed: Code Cleanup, Make it easier to add support for different type of config files in future if required
+
 ## 0.1.1
 
 - Added: Example

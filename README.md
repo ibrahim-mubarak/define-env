@@ -15,7 +15,7 @@ optionally copy the config to VS Code or to the clipboard.
 
 [dartdocs]: https://www.dartdocs.org/documentation/define_env/latest
 
-### Usage
+## Usage
 
 Get the latest version from pub:
 
@@ -23,7 +23,7 @@ Get the latest version from pub:
 $ dart pub global activate define_env
 ```
 
-#### Print
+### Print
 
 ```sh
 $ dart pub global run define_env      # generate dart define string and print it to stdout
@@ -31,13 +31,21 @@ $ dart pub global run define_env      # generate dart define string and print it
 
 You can skip printing using the `--no-print` flag
 
-#### Copy to clipboard
+### Copy to clipboard
 
 ```sh
 $ dart pub global run define_env -c      # generate dart define string and copy to clipboard 
 ```
 
-#### Copy to VS Code launch.json
+### Copy to IDE
+
+**Note**
+
+- When copying to IDE config, `define_env` tries to preserve existing arguments and overwrites only
+  the dart-define statements. This is not thoroughly tested and if you face problems with additional
+  arguments please create an issue.
+
+#### VS Code launch.json
 
 ```sh
 $ dart pub global run define_env -l      # generate dart define string and copy it to launch.json
@@ -54,19 +62,31 @@ $ dart pub global run define_env -l -n staging     # generate dart define string
 
 - `launch.json` may sometimes contain comments. These comments cannot be preserved as of now. If
   this is important then you should avoid this package
-- When copying to `launch.json`, define_env tries to preserve existing arguments and overwrites only
-  the dart-define statements. This is not thoroughly tested and if you face problems with additional
-  arguments please create an issue.
 
-### Discussion
+#### Android Studio
+
+```sh
+$ dart pub global run define_env -a      # generate dart define string and copy it to all run configs
+```
+
+By default, all configurations in `.idea/workspace.xml` and `.run/` are updated. If you want to update only a specific
+configuration, you can do the following
+
+```sh
+$ dart pub global run define_env -a -n staging     # generate dart define string and copy it to "staging" configuration only
+```
+
+## Discussion
 
 Use the [issue tracker][tracker] for bug reports and feature requests.
 
 [tracker]: https://github.com/ibrahim-mubarak/define_env/issues
 
-### Roadmap
+## Roadmap
 
-- [ ] Add support for Android Studio and Intellij
-- [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config
-- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing
-- [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc
+- [x] Add support for Android Studio and Intellij.
+- [ ] Make Android Studio and VS Code extensions and plugins to update config automatically when `.env` files are updated. 
+- [ ] Generate `Config` class from `.env` files which extract values from environment. 
+- [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config.
+- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing.
+- [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc.
