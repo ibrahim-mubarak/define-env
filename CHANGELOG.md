@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Fixed: Dart Define now skips empty variables from dart-define string
+
 ## 0.2.0+2
 
 - Fixed: Fix target file not found error in Android Studio when there are no retained arguments
