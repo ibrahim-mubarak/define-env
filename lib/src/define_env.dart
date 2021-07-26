@@ -6,12 +6,7 @@ import 'package:dotenv/dotenv.dart' as dotEnv;
 void loadEnvFromFile(String file) {
   checkFileExists(file);
   dotEnv.load(file);
-  Platform.environment.forEach((key, value) {
-    if (dotEnv.env.remove(key) == null) return;
-    Console.setTextColor(Color.YELLOW.id);
-    Console.write(
-        "The field '$key' in the .env file was skipped because already present in 'Platform.environment' map.");
-  });
+  Platform.environment.forEach((key, value) => dotEnv.env.remove(key));
 }
 
 String convertEnvMapToDartDefineString(Map<String, String> envMap) {
