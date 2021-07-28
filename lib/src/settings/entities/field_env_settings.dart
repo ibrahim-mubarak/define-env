@@ -18,8 +18,9 @@ class FieldEnvSettings {
     required this.dartName,
   });
 
-  factory FieldEnvSettings.fromJson(Map<dynamic, dynamic> map) => _$FieldEnvSettingsFromJson(map);
-  Map<dynamic, dynamic> toJson() => _$FieldEnvSettingsToJson(this);
+  factory FieldEnvSettings.fromJson(Map map) => _$FieldEnvSettingsFromJson(map);
+
+  Map<String, dynamic> toJson() => _$FieldEnvSettingsToJson(this);
 
   @override
   String toString() => '$runtimeType${toJson()}';

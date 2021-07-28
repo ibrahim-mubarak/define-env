@@ -58,11 +58,7 @@ void main(List<String> argv) {
   loadEnvFromFile(opts['file'] as String);
 
   final envSettings = loadEnvSettings(opts['settings'] as String);
-
-  if (envSettings != null) {
-    checkEnvSettings(envSettings);
-    checkEnv(dotEnv.env, envSettings);
-  }
+  isEnvValid(dotEnv.env, envSettings);
 
   var dartDefineString = convertEnvMapToDartDefineString(dotEnv.env);
 
