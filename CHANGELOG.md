@@ -1,3 +1,7 @@
+## 0.3.0
+
+- Added: env settings to validate your env file. Credits @BreX900 
+
 ## 0.2.1
 
 - Fixed: Dart Define now skips empty variables from dart-define string

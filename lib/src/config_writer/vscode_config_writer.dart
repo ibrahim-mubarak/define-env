@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:define_env/src/config_writer.dart';
+import 'package:define_env/src/config_writer/config_writer.dart';
 
 /// [ConfigWriter] for VS Code.
 ///

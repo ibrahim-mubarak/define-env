@@ -95,7 +95,7 @@ void copyToPlatformClipboard(String dartDefineString) {
   }).onError((error, stackTrace) {
     Console.setBackgroundColor(Color.RED.id);
     Console.setTextColor(Color.WHITE.id);
-    Console.write('\Could not copied to clipboard: $error\t\n');
+    Console.write('\tCould not copied to clipboard: $error\t\n');
   });
 }
 

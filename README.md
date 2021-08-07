@@ -1,7 +1,8 @@
 define_env
 ======
 
-Load variables from a `.env` file into a dart-define string and copy it to your IDE Config or to the clipboard.
+Load variables from a `.env` file into a dart-define string and copy it to your IDE Config or to the
+clipboard.
 
 [![Pub Version][pub-badge]][pub]
 [![Documentation][dartdocs-badge]][dartdocs]
@@ -68,11 +69,27 @@ $ dart pub global run define_env -l -n staging     # generate dart define string
 $ dart pub global run define_env -a      # generate dart define string and copy it to all run configs
 ```
 
-By default, all configurations in `.idea/workspace.xml` and `.run/` are updated. If you want to update only a specific
-configuration, you can do the following
+By default, all configurations in `.idea/workspace.xml` and `.run/` are updated. If you want to
+update only a specific configuration, you can do the following
 
 ```sh
 $ dart pub global run define_env -a -n staging     # generate dart define string and copy it to "staging" configuration only
+```
+
+### Env Validation
+
+You can add validation for your env by defining a `define_env.yaml` or adding a `define_env`section
+to your `pubspec.yaml`
+
+```yaml
+define_env:
+  fields:
+    <FIELD_NAME>:
+      type: enum     # String | bool | int | enum
+      default:       # If it is set the field in the env is optional.
+      enum_values:   # Defines the possible values of the enum. Required field when the type is enum.
+        - value1
+        - value2
 ```
 
 ## Discussion
@@ -84,8 +101,9 @@ Use the [issue tracker][tracker] for bug reports and feature requests.
 ## Roadmap
 
 - [x] Add support for Android Studio and Intellij.
-- [ ] Make Android Studio and VS Code extensions and plugins to update config automatically when `.env` files are updated. 
-- [ ] Generate `Config` class from `.env` files which extract values from environment. 
+- [x] Add validation support to see warn if any environment variable is missing.
+- [ ] Make Android Studio and VS Code extensions and plugins to update config automatically
+  when `.env` files are updated.
+- [ ] Generate `Config` class from `.env` files which extract values from environment.
 - [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config.
-- [ ] Add validation support against `.env.example` to see warn if any environment variable is missing.
 - [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc.
