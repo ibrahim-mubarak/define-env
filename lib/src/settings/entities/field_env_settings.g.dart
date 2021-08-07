@@ -13,20 +13,15 @@ FieldEnvSettings _$FieldEnvSettingsFromJson(Map json) => $checkedCreate(
         final val = FieldEnvSettings(
           type: $checkedConvert(
               'type', (v) => _$enumDecode(_$FieldTypeEnvSettingsEnumMap, v)),
-          enumValues: $checkedConvert(
-              'enum_values',
-              (v) => (v as Map?)?.map(
-                    (k, e) => MapEntry(k as String, e as String?),
-                  )),
+          enumValues: $checkedConvert('enum_values',
+              (v) => (v as List<dynamic>?)?.map((e) => e as String).toList()),
           defaultValue: $checkedConvert('default', (v) => v),
-          dartName: $checkedConvert('dart_name', (v) => v as String?),
         );
         return val;
       },
       fieldKeyMap: const {
         'enumValues': 'enum_values',
-        'defaultValue': 'default',
-        'dartName': 'dart_name'
+        'defaultValue': 'default'
       },
     );
 
@@ -35,7 +30,6 @@ Map<String, dynamic> _$FieldEnvSettingsToJson(FieldEnvSettings instance) =>
       'type': _$FieldTypeEnvSettingsEnumMap[instance.type],
       'enum_values': instance.enumValues,
       'default': instance.defaultValue,
-      'dart_name': instance.dartName,
     };
 
 K _$enumDecode<K, V>(

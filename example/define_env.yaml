@@ -10,9 +10,9 @@ define_env:
     ENUM_VALUE:
       type: enum
       enum_values:
-        developer:
-        demo:
-        production:
+        - developer
+        - demo
+        - production
     DEFAULT_VALUE:
       type: int
       default: 11

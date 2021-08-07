@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:console/console.dart';
+import 'package:define_env/define_env.dart';
 import 'package:define_env/src/settings/entities/env_settings.dart';
 import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
 
@@ -8,12 +9,13 @@ void checkEnvSettingsValid(EnvSettings options) {
   options.fields.forEach((name, fieldOptions) {
     final defaultValue = fieldOptions.defaultValue;
     if (defaultValue == null) return;
+
     var isFieldValid = _checkSettingsFieldValue(
-      "'$name' value in the pubspec",
-      fieldOptions.type,
+      name,
+      fieldOptions,
       defaultValue,
-      enumValues: fieldOptions.enumValues,
     );
+
     if (!isFieldValid) {
       exit(-1);
     }
@@ -22,44 +24,47 @@ void checkEnvSettingsValid(EnvSettings options) {
 
 bool _checkSettingsFieldValue(
   String name,
-  FieldTypeEnvSettings type,
-  Object value, {
-  Map<String, String?>? enumValues,
-}) {
-  switch (type) {
+  FieldEnvSettings fieldEnvSettings,
+  Object defaultValue,
+) {
+  switch (fieldEnvSettings.type) {
     case FieldTypeEnvSettings.string:
-      if (value is! String) {
+      if (defaultValue is! String) {
         _writeSettingsTypeError(name, 'String');
         return false;
       }
 
       return true;
     case FieldTypeEnvSettings.bool:
-      if (value is! bool) {
+      if (defaultValue is! bool) {
         _writeSettingsTypeError(name, 'bool');
         return false;
       }
 
       return true;
     case FieldTypeEnvSettings.int:
-      if (value is! int) {
+      if (defaultValue is! int) {
         _writeSettingsTypeError(name, 'int');
         return false;
       }
 
       return true;
     case FieldTypeEnvSettings.enum$:
+      var enumValues = fieldEnvSettings.enumValues;
       if (enumValues == null) {
         Console.setTextColor(Color.RED.id);
         Console.write(
-            "When you define the field with 'enum' field type in pubspec.yaml file you must also define the 'enum_values' field with enum values.");
+          "When you define the field as 'enum', "
+          "you must also provide 'enum_values'.",
+        );
         return false;
       }
 
-      if (!enumValues.containsKey(value)) {
+      if (!enumValues.contains(defaultValue)) {
         Console.setTextColor(Color.RED.id);
         Console.write(
-            "The '$name.default_value' field in the pubspec.yaml file is not present in the enum ${enumValues.keys.toList()}");
+          "The '$name.default_value' field is not present in the enum $enumValues",
+        );
         return false;
       }
 
@@ -69,6 +74,5 @@ bool _checkSettingsFieldValue(
 
 void _writeSettingsTypeError(String name, String typeName) {
   Console.setTextColor(Color.RED.id);
-  Console.write(
-      "The '$name.default_value' field in the pubspec.yaml file is not of the '$typeName' type");
+  Console.write("The '$name.default_value' field is not of '$typeName' type\n");
 }

@@ -6,16 +6,14 @@ part 'field_env_settings.g.dart';
 @JsonSerializable(anyMap: true, fieldRename: FieldRename.snake, checked: true)
 class FieldEnvSettings {
   final FieldTypeEnvSettings type;
-  final Map<String, String?>? enumValues;
+  final List<String>? enumValues;
   @JsonKey(name: 'default')
   final Object? defaultValue;
-  final String? dartName;
 
   const FieldEnvSettings({
     required this.type,
     required this.enumValues,
     required this.defaultValue,
-    required this.dartName,
   });
 
   factory FieldEnvSettings.fromJson(Map map) => _$FieldEnvSettingsFromJson(map);

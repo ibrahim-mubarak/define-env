@@ -5,26 +5,19 @@ import 'package:define_env/define_env.dart';
 import 'package:define_env/src/settings/entities/env_settings.dart';
 import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
 
-void isEnvValid(Map<String, String> envMap, EnvSettings dotEnvOptions) {
+void isEnvValid(Map<String, String> envMap, EnvSettings envSettings) {
   bool isEnvValid =
-      dotEnvOptions.fields.entries.fold<bool>(true, (previousValue, element) {
-    var name = element.key;
-    var fieldOptions = element.value;
-
+      envSettings.fields.entries.fold<bool>(true, (previousValue, element) {
+    final name = element.key;
     final value = envMap[name];
+    final fieldOptions = element.value;
 
     if (value == null) {
       bool isDefaultValueValid = _isDefaultValueValid(fieldOptions, name);
       return previousValue && isDefaultValueValid;
     }
 
-    var isEnvFieldValueValid = _isEnvFieldValueValid(
-      "'$name' value in the .env",
-      fieldOptions.type,
-      value,
-      enumValues: fieldOptions.enumValues,
-    );
-
+    var isEnvFieldValueValid = _isEnvFieldValueValid(name, fieldOptions, value);
     return previousValue && isEnvFieldValueValid;
   });
 
@@ -40,37 +33,43 @@ bool _isDefaultValueValid(FieldEnvSettings fieldOptions, String name) {
   Console.write(
     "Missing '$name' field on env file or define a 'default' field value\n",
   );
+
   return false;
 }
 
 bool _isEnvFieldValueValid(
   String name,
-  FieldTypeEnvSettings type,
-  String value, {
-  Map<String, String?>? enumValues,
-}) {
-  switch (type) {
+  FieldEnvSettings fieldSettings,
+  String value,
+) {
+  switch (fieldSettings.type) {
     case FieldTypeEnvSettings.string:
       return true;
+
     case FieldTypeEnvSettings.bool:
       if (!const ['true', 'false'].contains(value)) {
         _writeEnvTypeError(name, 'bool');
         return false;
       }
+
       return true;
     case FieldTypeEnvSettings.int:
       if (int.tryParse(value) == null) {
         _writeEnvTypeError(name, 'int');
         return false;
       }
+
       return true;
     case FieldTypeEnvSettings.enum$:
-      if (!enumValues!.containsKey('$value')) {
+      var enumValues = fieldSettings.enumValues;
+      if (!enumValues!.contains('$value')) {
         Console.setTextColor(Color.RED.id);
         Console.write(
-            "The value in the .env file is not present in the enum ${enumValues.keys.toList()}");
+          "The '$name' value in the .env file is not present in the enum $enumValues",
+        );
         return false;
       }
+
       return true;
   }
 }
@@ -78,5 +77,6 @@ bool _isEnvFieldValueValid(
 void _writeEnvTypeError(String name, String typeName) {
   Console.setTextColor(Color.RED.id);
   Console.write(
-      "The '$name' field in the .env file is not of the '$typeName' type");
+    "The '$name' field in the .env file is not of the '$typeName' type\n",
+  );
 }
