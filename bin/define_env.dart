@@ -1,7 +1,6 @@
 import 'package:args/args.dart';
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
-import 'package:define_env/src/android_studio_config_writer.dart';
 import 'package:dotenv/dotenv.dart' as dotEnv;
 
 final _argPsr = new ArgParser()
@@ -41,6 +40,12 @@ final _argPsr = new ArgParser()
     'config-name',
     abbr: 'n',
     help: 'Configuration name to use in IDE',
+  )
+  ..addOption(
+    'settings',
+    abbr: 's',
+    defaultsTo: 'define_env.yaml',
+    help: 'The yaml file settings to validate the .env file.',
   );
 
 void main(List<String> argv) {
@@ -51,6 +56,9 @@ void main(List<String> argv) {
   if (opts['help'] == true) return _usage();
 
   loadEnvFromFile(opts['file'] as String);
+
+  final envSettings = loadEnvSettings(opts['settings'] as String);
+  isEnvValid(dotEnv.env, envSettings);
 
   var dartDefineString = convertEnvMapToDartDefineString(dotEnv.env);
 

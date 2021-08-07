@@ -1,0 +1,18 @@
+define_env:
+  fields:
+    APP_TYPE:
+      type: String
+      default:
+    BOOL_VALUE:
+      type: bool
+    INT_VALUE:
+      type: int
+    ENUM_VALUE:
+      type: enum
+      enum_values:
+        - developer
+        - demo
+        - production
+    DEFAULT_VALUE:
+      type: int
+      default: 11
