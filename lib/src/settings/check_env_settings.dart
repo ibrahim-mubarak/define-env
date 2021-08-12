@@ -8,24 +8,50 @@ import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
 void checkEnvSettingsValid(EnvSettings options) {
   options.fields.forEach((name, fieldOptions) {
     final defaultValue = fieldOptions.defaultValue;
+
+    final isSettingsFieldValid = _checkFieldSettings(name, fieldOptions);
+
+    if (!isSettingsFieldValid) {
+      exit(-1);
+    }
+
     if (defaultValue == null) return;
 
-    var isFieldValid = _checkSettingsFieldValue(
+    final isSettingsDefaultFieldValueValid = _checkSettingsDefaultFieldValue(
       name,
       fieldOptions,
       defaultValue,
     );
 
-    if (!isFieldValid) {
+    if (!isSettingsDefaultFieldValueValid) {
       exit(-1);
     }
   });
 }
 
-bool _checkSettingsFieldValue(
+bool _checkFieldSettings(String name, FieldEnvSettings fieldEnvSettings) {
+  switch (fieldEnvSettings.type) {
+    case FieldTypeEnvSettings.enum$:
+      var enumValues = fieldEnvSettings.enumSettings?.values;
+      if (enumValues == null) {
+        Console.setTextColor(Color.RED.id);
+        Console.write(
+          "When you define the field as 'enum', "
+          "you must also provide 'enum.values'.",
+        );
+        return false;
+      }
+
+      return true;
+    default:
+      return true;
+  }
+}
+
+bool _checkSettingsDefaultFieldValue(
   String name,
   FieldEnvSettings fieldEnvSettings,
-  Object defaultValue,
+  Object? defaultValue,
 ) {
   switch (fieldEnvSettings.type) {
     case FieldTypeEnvSettings.string:
@@ -50,12 +76,12 @@ bool _checkSettingsFieldValue(
 
       return true;
     case FieldTypeEnvSettings.enum$:
-      var enumValues = fieldEnvSettings.enumValues;
+      var enumValues = fieldEnvSettings.enumSettings?.values;
       if (enumValues == null) {
         Console.setTextColor(Color.RED.id);
         Console.write(
           "When you define the field as 'enum', "
-          "you must also provide 'enum_values'.",
+          "you must also provide 'enum.values'.",
         );
         return false;
       }

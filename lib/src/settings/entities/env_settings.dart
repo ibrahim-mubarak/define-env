@@ -8,9 +8,27 @@ part 'env_settings.g.dart';
 
 @JsonSerializable(anyMap: true, fieldRename: FieldRename.snake, checked: true)
 class EnvSettings {
+  /// The width of the file. Set this field when using a different file format
+  final int fileWidth;
+
+  /// The target directory of the file containing the env dart class
+  final String filePath;
+
+  /// The name of the env's dart class
+  @JsonKey(name: 'class')
+  final String className;
+
+  /// Map with the key the name of the field in the env and
+  /// with the value the settings of that field
+  ///
+  /// It must contain at least one field in order to validate the .env file and
+  /// to generate the corresponding dart class
   final Map<String, FieldEnvSettings> fields;
 
   EnvSettings({
+    this.fileWidth = 80,
+    this.filePath = 'lib',
+    this.className = 'Env',
     required this.fields,
   });
 
@@ -18,7 +36,7 @@ class EnvSettings {
 
   factory EnvSettings.fromPath(String path) {
     var settings = loadEnvSettingsFromFile(path);
-    return settings ?? EnvSettings(fields: {});
+    return settings ?? EnvSettings(fields: const {});
   }
 
   Map<String, dynamic> toJson() => _$EnvSettingsToJson(this);

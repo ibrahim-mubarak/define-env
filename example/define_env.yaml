@@ -1,4 +1,6 @@
 define_env:
+  file_path: example
+  class: MyEnv
   fields:
     APP_TYPE:
       type: String
@@ -9,10 +11,15 @@ define_env:
       type: int
     ENUM_VALUE:
       type: enum
-      enum_values:
-        - developer
-        - demo
-        - production
+      enum:
+        class: MyEnum
+        values:
+          - developer
+          - demo
+          - production
+        names:
+          developer: dev
+          production: prod
     DEFAULT_VALUE:
       type: int
       default: 11

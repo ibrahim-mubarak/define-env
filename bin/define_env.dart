@@ -60,6 +60,12 @@ void main(List<String> argv) {
   final envSettings = loadEnvSettings(opts['settings'] as String);
   isEnvValid(dotEnv.env, envSettings);
 
+  // If the path to the env library is defined it creates and writes the library
+  if (envSettings.fields.isNotEmpty) {
+    final library = createLibrary(envSettings);
+    writeLibrary(envSettings, library);
+  }
+
   var dartDefineString = convertEnvMapToDartDefineString(dotEnv.env);
 
   if (opts['print']) {

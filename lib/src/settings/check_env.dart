@@ -61,8 +61,8 @@ bool _isEnvFieldValueValid(
 
       return true;
     case FieldTypeEnvSettings.enum$:
-      var enumValues = fieldSettings.enumValues;
-      if (!enumValues!.contains('$value')) {
+      var enumValues = fieldSettings.enumSettings!.values;
+      if (!enumValues.contains('$value')) {
         Console.setTextColor(Color.RED.id);
         Console.write(
           "The '$name' value in the .env file is not present in the enum $enumValues",

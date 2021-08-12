@@ -13,23 +13,26 @@ FieldEnvSettings _$FieldEnvSettingsFromJson(Map json) => $checkedCreate(
         final val = FieldEnvSettings(
           type: $checkedConvert(
               'type', (v) => _$enumDecode(_$FieldTypeEnvSettingsEnumMap, v)),
-          enumValues: $checkedConvert('enum_values',
-              (v) => (v as List<dynamic>?)?.map((e) => e as String).toList()),
+          enumSettings: $checkedConvert('enum',
+              (v) => v == null ? null : EnumEnvSettings.fromJson(v as Map)),
           defaultValue: $checkedConvert('default', (v) => v),
+          fieldName: $checkedConvert('field_name', (v) => v as String?),
         );
         return val;
       },
       fieldKeyMap: const {
-        'enumValues': 'enum_values',
-        'defaultValue': 'default'
+        'enumSettings': 'enum',
+        'defaultValue': 'default',
+        'fieldName': 'field_name'
       },
     );
 
 Map<String, dynamic> _$FieldEnvSettingsToJson(FieldEnvSettings instance) =>
     <String, dynamic>{
       'type': _$FieldTypeEnvSettingsEnumMap[instance.type],
-      'enum_values': instance.enumValues,
+      'enum': instance.enumSettings,
       'default': instance.defaultValue,
+      'field_name': instance.fieldName,
     };
 
 K _$enumDecode<K, V>(
