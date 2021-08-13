@@ -46,6 +46,12 @@ final _argPsr = new ArgParser()
     abbr: 's',
     defaultsTo: 'define_env.yaml',
     help: 'The yaml file settings to validate the .env file.',
+  )
+  ..addFlag(
+    'generate',
+    defaultsTo: true,
+    help:
+        'Generate dart code to read environment variables from yaml file settings.',
   );
 
 void main(List<String> argv) {
@@ -60,8 +66,7 @@ void main(List<String> argv) {
   final envSettings = loadEnvSettings(opts['settings'] as String);
   isEnvValid(dotEnv.env, envSettings);
 
-  // If the path to the env library is defined it creates and writes the library
-  if (envSettings.fields.isNotEmpty) {
+  if (opts['generate']) {
     final library = createLibrary(envSettings);
     writeLibrary(envSettings, library);
   }

@@ -1,8 +1,8 @@
 import 'package:code_builder/code_builder.dart';
 
-final stringType = Reference('String');
-final boolType = Reference('bool');
-final intType = Reference('int');
+const stringType = Reference('String');
+const boolType = Reference('bool');
+const intType = Reference('int');
 
 Code valueToCode(Object value) {
   if (value is String) {

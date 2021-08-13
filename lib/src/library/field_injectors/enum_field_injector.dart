@@ -3,7 +3,7 @@ import 'package:define_env/src/library/field_injectors/field_injector.dart';
 import 'package:define_env/src/library/library_utils.dart';
 import 'package:define_env/src/settings/entities/field_env_settings.dart';
 import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
-import 'package:define_env/src/utils.dart';
+import 'package:recase/recase.dart';
 
 /// Injects the information for the [enum] type field in the env class and library
 class EnumFieldInjector extends FieldInjector {
@@ -102,7 +102,7 @@ class EnumFieldInjector extends FieldInjector {
           return Reference(enumSettings.className!);
         }
 
-        return Reference('${pascalCase(envFieldName)}${envClassName}');
+        return Reference('${envFieldName.pascalCase}${envClassName}');
       default:
         throw 'Not supported ${fieldSettings.type}';
     }

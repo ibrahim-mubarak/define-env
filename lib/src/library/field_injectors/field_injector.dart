@@ -3,7 +3,7 @@ import 'package:define_env/src/library/field_injectors/enum_field_injector.dart'
 import 'package:define_env/src/library/field_injectors/primitive_field_injector.dart';
 import 'package:define_env/src/settings/entities/field_env_settings.dart';
 import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
-import 'package:define_env/src/utils.dart';
+import 'package:recase/recase.dart';
 
 /// Injects the field settings into the library or env class
 abstract class FieldInjector {
@@ -37,7 +37,7 @@ abstract class FieldInjector {
     cb.fields.add(Field((b) => b
       ..static = true
       ..modifier = FieldModifier.constant
-      ..name = fieldSettings.fieldName ?? camelCase(envFieldName)
+      ..name = fieldSettings.fieldName ?? envFieldName.camelCase
       ..update((fb) => onInject(lb, cb, fb))));
   }
 
