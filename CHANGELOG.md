@@ -1,3 +1,8 @@
+## 0.3.1
+
+- Added: Generate Env Class from env file and env settings. Credits @BreX900
+- Added: define_env to executables path. No need to run `pub global run` always now
+
 ## 0.3.0
 
 - Added: env settings to validate your env file. Credits @BreX900 

@@ -23,10 +23,13 @@ Get the latest version from pub:
 $ dart pub global activate define_env
 ```
 
+You can add the Pub Cache directory to execute the command easily. (Learn
+More)[https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path]
+
 ### Print
 
 ```sh
-$ dart pub global run define_env      # generate dart define string and print it to stdout
+$ define_env      # generate dart define string and print it to stdout
 ```
 
 You can skip printing using the `--no-print` flag
@@ -34,7 +37,7 @@ You can skip printing using the `--no-print` flag
 ### Copy to clipboard
 
 ```sh
-$ dart pub global run define_env -c      # generate dart define string and copy to clipboard 
+$ define_env -c      # generate dart define string and copy to clipboard 
 ```
 
 ### Copy to IDE
@@ -48,14 +51,14 @@ $ dart pub global run define_env -c      # generate dart define string and copy 
 #### VS Code launch.json
 
 ```sh
-$ dart pub global run define_env -l      # generate dart define string and copy it to launch.json
+$ define_env -l      # generate dart define string and copy it to launch.json
 ```
 
 By default, all configurations in `launch.json` are updated. If you want to update only a specific
 configuration, you can do the following
 
 ```sh
-$ dart pub global run define_env -l -n staging     # generate dart define string and copy it to "staging" configuration in launch.json
+$ define_env -l -n staging     # generate dart define string and copy it to "staging" configuration in launch.json
 ```
 
 **Note**
@@ -66,14 +69,14 @@ $ dart pub global run define_env -l -n staging     # generate dart define string
 #### Android Studio
 
 ```sh
-$ dart pub global run define_env -a      # generate dart define string and copy it to all run configs
+$ define_env -a      # generate dart define string and copy it to all run configs
 ```
 
 By default, all configurations in `.idea/workspace.xml` and `.run/` are updated. If you want to
 update only a specific configuration, you can do the following
 
 ```sh
-$ dart pub global run define_env -a -n staging     # generate dart define string and copy it to "staging" configuration only
+$ define_env -a -n staging     # generate dart define string and copy it to "staging" configuration only
 ```
 
 ### Env Validation
@@ -83,13 +86,26 @@ to your `pubspec.yaml`
 
 ```yaml
 define_env:
+  file_path: example
+  class: MyEnv
   fields:
     <FIELD_NAME>:
       type: enum     # String | bool | int | enum
       default:       # If it is set the field in the env is optional.
-      enum_values:   # Defines the possible values of the enum. Required field when the type is enum.
+      enum_values: # Defines the possible values of the enum. Required field when the type is enum.
         - value1
         - value2
+```
+
+### Env Class Generation
+
+Running `define_env` will automatically generate an Env Class for you to use in your project. The
+class name is defined by `class` and File Path is defined by `file_path` in `define_env` section of
+your `define_env.yaml` or `pubspec.yaml`. If you don't want a class to be generated, you can pass
+the `--no-generate` flag.
+
+```sh
+$ define_env --no-generate     # Skip Env Class generation
 ```
 
 ## Discussion

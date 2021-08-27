@@ -22,25 +22,24 @@ class EnumFieldInjector extends FieldInjector {
     final type = _getFieldType(cb.name!);
 
     // Injects the enum class into the library
-    lb
-      ..body.add(Class((b) => b
-        ..name = type.symbol
-        ..constructors.add(Constructor((b) => b
-          ..constant = true
-          ..name = '_'
-          ..requiredParameters.add(Parameter((b) => b
-            ..toThis = true
-            ..name = _valueFieldName))))
-        ..fields.add(Field((b) => b
-          ..modifier = FieldModifier.final$
-          ..type = stringType
-          ..name = _valueFieldName))
-        ..fields.addAll(enumSettings.values.map((value) {
-          return _createField(type, enumSettings.names[value], value);
-        }))
-        ..methods.addAll(enumSettings.values.map((value) {
-          return _createMethod(enumSettings.names[value], value);
-        }))));
+    lb.body.add(Class((b) => b
+      ..name = type.symbol
+      ..constructors.add(Constructor((b) => b
+        ..constant = true
+        ..name = '_'
+        ..requiredParameters.add(Parameter((b) => b
+          ..toThis = true
+          ..name = _valueFieldName))))
+      ..fields.add(Field((b) => b
+        ..modifier = FieldModifier.final$
+        ..type = stringType
+        ..name = _valueFieldName))
+      ..fields.addAll(enumSettings.values.map((value) {
+        return _createField(type, enumSettings.names[value], value);
+      }))
+      ..methods.addAll(enumSettings.values.map((value) {
+        return _createMethod(enumSettings.names[value], value);
+      }))));
 
     // Injects the remaining field settings into the env class
     fb

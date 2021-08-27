@@ -3,7 +3,7 @@ import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
 import 'package:dotenv/dotenv.dart' as dotEnv;
 
-final _argPsr = new ArgParser()
+final _argPsr = ArgParser()
   ..addFlag('help', abbr: 'h', negatable: false, help: 'Print this help text.')
   ..addOption(
     'file',
