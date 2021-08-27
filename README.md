@@ -23,8 +23,8 @@ Get the latest version from pub:
 $ dart pub global activate define_env
 ```
 
-You can add the Pub Cache directory to execute the command easily. (Learn
-More)[https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path]
+You can add the Pub Cache directory to execute the command easily. 
+[Learn More](https://dart.dev/tools/pub/cmd/pub-global#running-a-script-from-your-path)
 
 ### Print
 
@@ -118,8 +118,8 @@ Use the [issue tracker][tracker] for bug reports and feature requests.
 
 - [x] Add support for Android Studio and Intellij.
 - [x] Add validation support to see warn if any environment variable is missing.
+- [x] Generate `Config` class from `.env` files which extract values from environment.
 - [ ] Make Android Studio and VS Code extensions and plugins to update config automatically
   when `.env` files are updated.
-- [ ] Generate `Config` class from `.env` files which extract values from environment.
 - [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config.
 - [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc.
