@@ -30,4 +30,5 @@ class MyEnum {
   bool get isDev => this == dev;
   bool get isDemo => this == demo;
   bool get isProd => this == prod;
+  String toString() => 'MyEnum.$value';
 }
