@@ -92,9 +92,10 @@ define_env:
     <FIELD_NAME>:
       type: enum     # String | bool | int | enum
       default:       # If it is set the field in the env is optional.
-      enum_values: # Defines the possible values of the enum. Required field when the type is enum.
-        - value1
-        - value2
+      enum: # Defines the possible values of the enum. Required field when the type is enum.
+        values:
+          - value1
+          - value2
 ```
 
 ### Env Class Generation
