@@ -7,7 +7,7 @@ import 'package:recase/recase.dart';
 
 /// Write the [library] locally according to the defined [settings]
 void writeLibrary(EnvSettings settings, Library library) {
-  final fileOutput = settings.filePath;
+  final directoryPath = settings.filePath;
 
   final emitter = DartEmitter.scoped(useNullSafetySyntax: true);
 
@@ -19,9 +19,14 @@ void writeLibrary(EnvSettings settings, Library library) {
 
   final fileName = settings.className.snakeCase;
 
-  final filePath = '$fileOutput/$fileName.dart';
+  final filePath = '$directoryPath/$fileName.dart';
 
   final fileContent = '// GENERATED CODE - DO NOT MODIFY BY HAND\n\n$code';
 
+  // Create output directory
+  final directory = Directory(directoryPath);
+  if (!directory.existsSync()) directory.createSync(recursive: true);
+
+  // Create and write output file
   File(filePath).writeAsStringSync(fileContent);
 }

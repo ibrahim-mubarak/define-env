@@ -38,8 +38,9 @@ class EnumFieldInjector extends FieldInjector {
         return _createField(type, enumSettings.names[value], value);
       }))
       ..methods.addAll(enumSettings.values.map((value) {
-        return _createMethod(enumSettings.names[value], value);
-      }))));
+        return _createIsMethod(enumSettings.names[value], value);
+      }))
+      ..methods.add(_createToStringMethod(type))));
 
     // Injects the remaining field settings into the env class
     fb
@@ -78,7 +79,7 @@ class EnumFieldInjector extends FieldInjector {
   /// Ex:
   /// class ClassName { ...
   ///   bool get isValueName => this == valueName;
-  Method _createMethod(
+  Method _createIsMethod(
     String? settingsEnumValueName,
     String settingsEnumValue,
   ) {
@@ -90,6 +91,18 @@ class EnumFieldInjector extends FieldInjector {
       ..name = 'is${valueName[0].toUpperCase()}${valueName.substring(1)}'
       ..lambda = true
       ..body = Code('this == $valueName'));
+  }
+
+  /// Create toString method
+  /// Ex:
+  /// class ClassName { ...
+  ///   String toString() => 'ClassName.$value';
+  Method _createToStringMethod(Reference enumType) {
+    return Method((b) => b
+      ..returns = stringType
+      ..name = 'toString'
+      ..lambda = true
+      ..body = Code("'${enumType.symbol}.\$${_valueFieldName}'"));
   }
 
   Reference _getFieldType(String envClassName) {
