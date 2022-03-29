@@ -1,17 +1,19 @@
 import 'dart:io';
 
 import 'package:console/console.dart';
-import 'package:dotenv/dotenv.dart' as dotEnv;
+import 'package:dotenv/dotenv.dart';
 
-void loadEnvFromFile(String file) {
+DotEnv loadEnvFromFile(String file) {
   checkFileExists(file);
-  dotEnv.load(file);
-  Platform.environment.forEach((key, value) => dotEnv.env.remove(key));
+
+  return DotEnv()..load([file]);
 }
 
-String convertEnvMapToDartDefineString(Map<String, String> envMap) {
+String convertEnvToDartDefineString(DotEnv env) {
   StringBuffer buffer = StringBuffer();
-  envMap.forEach((key, value) {
+
+  // ignore: invalid_use_of_visible_for_testing_member
+  env.map.forEach((key, value) {
     if (value.isEmpty) return;
 
     if (value.contains(" ")) {

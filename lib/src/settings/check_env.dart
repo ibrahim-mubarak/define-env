@@ -2,14 +2,13 @@ import 'dart:io';
 
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
-import 'package:define_env/src/settings/entities/env_settings.dart';
-import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
+import 'package:dotenv/dotenv.dart';
 
-void isEnvValid(Map<String, String> envMap, EnvSettings envSettings) {
+void isEnvValid(DotEnv dotEnv, EnvSettings envSettings) {
   bool isEnvValid =
       envSettings.fields.entries.fold<bool>(true, (previousValue, element) {
     final name = element.key;
-    final value = envMap[name];
+    final value = dotEnv[name];
     final fieldOptions = element.value;
 
     if (value == null) {

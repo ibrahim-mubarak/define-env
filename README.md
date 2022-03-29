@@ -124,3 +124,5 @@ Use the [issue tracker][tracker] for bug reports and feature requests.
   when `.env` files are updated.
 - [ ] Copy config name directly from `.env` files. ex `.env.staging` is copied to staging config.
 - [ ] Simplify command usage. ex `define_env:print` `define_env:copy` `define_env:vscode` etc.
+- [ ] Add Stdin support.
+- [ ] Add support for config files created with `melos`

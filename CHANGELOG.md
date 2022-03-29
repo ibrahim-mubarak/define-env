@@ -1,3 +1,6 @@
+## 0.4.0
+- Fixed: compatibility with `melos` scripts.
+
 ## 0.3.1
 
 - Added: Generate Env Class from env file and env settings. Credits @BreX900

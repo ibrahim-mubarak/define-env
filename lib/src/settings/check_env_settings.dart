@@ -2,8 +2,6 @@ import 'dart:io';
 
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
-import 'package:define_env/src/settings/entities/env_settings.dart';
-import 'package:define_env/src/settings/entities/field_type_env_settings.dart';
 
 void checkEnvSettingsValid(EnvSettings options) {
   options.fields.forEach((name, fieldOptions) {

@@ -1,7 +1,6 @@
 import 'package:args/args.dart';
 import 'package:console/console.dart';
 import 'package:define_env/define_env.dart';
-import 'package:dotenv/dotenv.dart' as dotEnv;
 
 final _argPsr = ArgParser()
   ..addFlag('help', abbr: 'h', negatable: false, help: 'Print this help text.')
@@ -61,17 +60,17 @@ void main(List<String> argv) {
 
   if (opts['help'] == true) return _usage();
 
-  loadEnvFromFile(opts['file'] as String);
+  var dotEnv = loadEnvFromFile(opts['file'] as String);
 
   final envSettings = loadEnvSettings(opts['settings'] as String);
-  isEnvValid(dotEnv.env, envSettings);
+  isEnvValid(dotEnv, envSettings);
 
   if (opts['generate']) {
     final library = createLibrary(envSettings);
     writeLibrary(envSettings, library);
   }
 
-  var dartDefineString = convertEnvMapToDartDefineString(dotEnv.env);
+  var dartDefineString = convertEnvToDartDefineString(dotEnv);
 
   if (opts['print']) {
     print(dartDefineString);
