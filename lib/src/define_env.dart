@@ -1,12 +1,14 @@
-import 'dart:io';
+import 'dart:async';
 
-import 'package:console/console.dart';
+import 'package:define_env/src/loader/loader.dart';
 import 'package:dotenv/dotenv.dart';
 
-DotEnv loadEnvFromFile(String file) {
-  checkFileExists(file);
+Future<DotEnv> loadEnv(String file) async {
+  if (file == '-') {
+    return StdinLoader().load();
+  }
 
-  return DotEnv()..load([file]);
+  return FileLoader(file).load();
 }
 
 String convertEnvToDartDefineString(DotEnv env) {
@@ -25,20 +27,4 @@ String convertEnvToDartDefineString(DotEnv env) {
   var string = buffer.toString();
   var finalStringToPrintAndCopy = string.substring(0, string.length - 1);
   return finalStringToPrintAndCopy;
-}
-
-void checkFileExists(String file) {
-  if (!File(file).existsSync()) {
-    Console.setTextColor(Color.RED.id);
-    Console.write("$file not found\n");
-    exit(-1);
-  }
-}
-
-void checkDirectoryExists(String file) {
-  if (!Directory(file).existsSync()) {
-    Console.setTextColor(Color.RED.id);
-    Console.write("$file not found\n");
-    exit(-1);
-  }
 }

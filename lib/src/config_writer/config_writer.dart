@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:define_env/define_env.dart';
+import 'package:define_env/src/utils.dart';
 
 abstract class ConfigWriter {
   final String projectPath;

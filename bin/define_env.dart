@@ -53,14 +53,14 @@ final _argPsr = ArgParser()
         'Generate dart code to read environment variables from yaml file settings.',
   );
 
-void main(List<String> argv) {
+void main(List<String> argv) async {
   Console.init();
 
   var opts = _argPsr.parse(argv);
 
   if (opts['help'] == true) return _usage();
 
-  var dotEnv = loadEnvFromFile(opts['file'] as String);
+  var dotEnv = await loadEnv(opts['file'] as String);
 
   final envSettings = loadEnvSettings(opts['settings'] as String);
   isEnvValid(dotEnv, envSettings);

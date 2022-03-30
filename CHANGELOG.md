@@ -1,5 +1,7 @@
 ## 0.4.0
+
 - Fixed: compatibility with `melos` scripts.
+- Added: Support for reading from stdin
 
 ## 0.3.1
 

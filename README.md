@@ -1,7 +1,7 @@
 define_env
 ======
 
-Load variables from a `.env` file into a dart-define string and copy it to your IDE Config or to the
+Load variables from a `.env` file into a dart-define (also known as Environment declarations) string and copy it to your IDE Config or to the
 clipboard.
 
 [![Pub Version][pub-badge]][pub]
@@ -38,6 +38,16 @@ You can skip printing using the `--no-print` flag
 
 ```sh
 $ define_env -c      # generate dart define string and copy to clipboard 
+```
+
+### CI/CD
+
+You can generate and pass the dart define strings to your CI/CD pipeline.
+To do this with doppler, you can do the following:
+
+```shell
+dartdefines=`doppler secrets download --format=env --no-file | define_env -f -`
+flutter build apk $dartdefines
 ```
 
 ### Copy to IDE
