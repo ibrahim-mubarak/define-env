@@ -96,9 +96,11 @@ class EnumFieldInjector extends FieldInjector {
   /// Create toString method
   /// Ex:
   /// class ClassName { ...
+  ///   @override
   ///   String toString() => 'ClassName.$value';
   Method _createToStringMethod(Reference enumType) {
     return Method((b) => b
+      ..annotations.add(overrideAnnotation)
       ..returns = stringType
       ..name = 'toString'
       ..lambda = true

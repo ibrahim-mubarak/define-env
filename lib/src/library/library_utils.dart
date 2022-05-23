@@ -4,6 +4,8 @@ const stringType = Reference('String');
 const boolType = Reference('bool');
 const intType = Reference('int');
 
+const overrideAnnotation = CodeExpression(Code('override'));
+
 Code valueToCode(Object value) {
   if (value is String) {
     return Code("'${value}'");
