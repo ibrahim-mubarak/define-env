@@ -33,34 +33,49 @@ class VscodeConfigWriter extends ConfigWriter {
   String writeConfig(String fileContent) {
     /// launch.json usually contains comments, which is valid only in JSON5.
     /// At this point however we cannot preserve these comments.
-    fileContent = fileContent.replaceAll(RegExp('.+//.+\n'), "");
+    try {
+      Map<String, dynamic> configJson = jsonDecode(fileContent);
+      var configs = (configJson['configurations'] as List);
 
-    var configJson = jsonDecode(fileContent);
+      List<String> dartDefineList = getDartDefineList();
 
-    var configList = (configJson['configurations'] as Iterable);
-
-    if (configName != null) {
-      configList = configList.where((config) => config['name'] == configName);
+      if (configName != null) {
+        var namedConfig = configs
+            .where((config) => config['name'] == configName)
+            .toList()
+            .first;
+        var updatedNamedConfig = updateConfig(namedConfig, dartDefineList);
+        configs.removeWhere((element) => element['name'] == configName);
+        configs.add(updatedNamedConfig);
+        configJson['configurations'] = configs;
+      } else {
+        configJson['configurations'] = configs
+            .map((configMap) => updateConfig(configMap, dartDefineList))
+            .toList();
+      }
+      return prettifyJson(configJson);
+    } catch (err) {
+      print(
+          'Exception occurred: Possible error is comments in JSON. Additional information: $err');
+      return fileContent;
     }
-
-    var dartDefineList = getDartDefineList();
-
-    configJson['configurations'] =
-        configList.map((configMap) => updateConfig(configMap, dartDefineList));
-
-    return prettifyJson(configJson);
   }
 
   /// Update a single VS Code [config] with [dartDefineList].
   Map<String, dynamic> updateConfig(
     Map<String, dynamic> config,
-    Iterable<String> dartDefineList,
+    List<String> dartDefineList,
   ) {
-    return config.update(
-      'args',
-      (value) => getNonDartDefineArguments(value).followedBy(dartDefineList),
-      ifAbsent: () => dartDefineList,
-    );
+    Map<String, dynamic> configUpdate = Map<String, dynamic>.from(config);
+
+    print('ConfigUpdate: $configUpdate');
+    if (configUpdate.containsKey('args')) {
+      configUpdate.remove('args');
+    }
+    configUpdate.putIfAbsent('args', () => dartDefineList);
+
+    print('ConfigUpdated: $configUpdate');
+    return configUpdate;
   }
 
   /// Pretty Print [json]
@@ -93,8 +108,9 @@ class VscodeConfigWriter extends ConfigWriter {
   }
 
   /// Splits the dart-define string into a list format as required by VS Code.
-  Iterable<String> getDartDefineList() {
+  List<String> getDartDefineList() {
     return (dartDefineString.split("--dart-define=")..removeAt(0))
-        .expand((element) => ["--dart-define", element.trim()]);
+        .expand((element) => ["--dart-define", element.trim()])
+        .toList();
   }
 }
