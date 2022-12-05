@@ -19,7 +19,7 @@ String convertEnvToDartDefineString(DotEnv env) {
     if (value.isEmpty) return;
 
     if (value.contains(" ")) {
-      value = '"$value"';
+      value = '\"$value\"';
     }
 
     buffer.write("--dart-define=$key=$value ");

@@ -1,3 +1,7 @@
+## 0.4.1
+
+- Fixed: Values with spaces don't read correctly.
+
 ## 0.4.0
 
 - Fixed: compatibility with `melos` scripts.
