@@ -33,15 +33,16 @@ class StdinLoader extends Loader {
   @override
   Future<DotEnv> load() {
     var completer = Completer<DotEnv>();
-
+    List<String> finalData = [];
     stdin
         .transform(utf8.decoder)
         .transform(const LineSplitter())
-        .listen(_parseAndAdd)
-      ..onDone(() => completer.complete(dotEnv));
+        .listen((data) => finalData.add(data))
+      ..onDone(() {
+        dotEnv.addAll(parser.parse(finalData));
+        completer.complete(dotEnv);
+      });
 
     return completer.future;
   }
-
-  void _parseAndAdd(String data) => dotEnv.addAll(parser.parseOne(data));
 }
