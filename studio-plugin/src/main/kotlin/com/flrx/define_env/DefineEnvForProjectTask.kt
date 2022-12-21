@@ -1,5 +1,9 @@
 package com.flrx.define_env
 
+import com.flrx.define_env.exceptions.DartSdkException
+import com.flrx.define_env.exceptions.ProjectPathException
+import com.flrx.define_env.model.DefineEnvModel
+import com.flrx.define_env.settings.SettingsService
 import com.flrx.define_env.utils.addPathToEnv
 import com.flrx.define_env.utils.readError
 import com.flrx.define_env.utils.readOutput
@@ -15,33 +19,52 @@ import com.jetbrains.lang.dart.sdk.DartSdk
 import io.flutter.run.FlutterRunConfigurationType
 import io.flutter.run.SdkRunConfig
 import java.io.File
+import kotlin.io.path.Path
 
 class DefineEnvForProjectTask(
     private val file: VirtualFile,
     private val project: Project,
-) : Task.Backgroundable(project, "Updating Dart Define") {
+) : Task.Backgroundable(project, "Updating dart define configuration") {
     private lateinit var indicator: ProgressIndicator
 
+    private val service = SettingsService.getInstance(project)
     override fun run(indicator: ProgressIndicator) {
         this.indicator = indicator
+
+
+        val filePathFromProjectRoot: String = file.path.replace(project.basePath + File.separator, "")
+
+        val properConfigs = service.state.envRunConfigs.filter {
+            return@filter it.file == filePathFromProjectRoot
+        }
+
+        println(properConfigs)
+
+        if (properConfigs.isEmpty()) {
+            return
+        }
+
         if (!indicator.isRunning) {
             indicator.start()
         }
-        runDefineEnvForProject()
+
+        properConfigs.forEach {
+            runDefineEnvForConfig(it)
+        }
         indicator.stop()
     }
 
-    private fun runDefineEnvForProject(): Boolean {
-        indicator.text = "Starting Process"
+    private fun runDefineEnvForConfig(model: DefineEnvModel): Boolean {
+        indicator.text = "Starting process"
         val pb = buildDefineEnvProcess()
 
 
         // start the process
-        indicator.text = "Running Process"
+        indicator.text = "Running process"
         val process = pb.start()
 
         // read the output from the process
-        var processOutput = process.readOutput()
+        val processOutput = process.readOutput()
 
         // wait for the process to finish
         val finalCode = process.waitFor()
@@ -56,8 +79,8 @@ class DefineEnvForProjectTask(
             }
 
             else -> {
-                indicator.text = "Updating Configurations"
-                updateConfigurationsForProject(project, processOutput)
+                indicator.text = "Updating configurations"
+                updateConfigurations(model, processOutput)
                 true
             }
         }
@@ -65,31 +88,31 @@ class DefineEnvForProjectTask(
 
     private fun buildDefineEnvProcess(): ProcessBuilder {
         /// Build Process
-        val pb = ProcessBuilder("dart", "pub", "global", "run", "define_env", "-f", file.path)
+        /// Add Dart SDK to PATH
+        val dartSdkPath = DartSdk.getDartSdk(project)?.homePath ?: throw DartSdkException()
+
+        val dartSdkBinPath = dartSdkPath + File.separator + "bin"
+        val dartBinary = Path(dartSdkPath, "bin", "dart").toString()
+
+        val pb = ProcessBuilder(dartBinary, "pub", "global", "run", "define_env", "-f", file.path)
+
+        val projectPath = project.basePath ?: throw ProjectPathException()
 
         /// Run in Project directory
-        println(file.path)
-        println(project.basePath)
-        pb.directory(File(project.basePath))
+        pb.directory(File(projectPath))
 
         /// Update Path Env
         pb.addPathToEnv(System.getenv("PATH"))
-
-        /// Add Dart SDK to PATH
-
-        val dartSdkPath = DartSdk.getDartSdk(project)?.homePath
-        println(dartSdkPath ?: "No SDK Found for project")
-
-        val dartSdkBinPath = dartSdkPath + File.separator + "bin"
         pb.addPathToEnv(dartSdkBinPath)
 
         return pb
     }
 
 
-    private fun updateConfigurationsForProject(project: Project, dartDefineString: String) {
+    private fun updateConfigurations(model: DefineEnvModel, dartDefineString: String) {
         RunManagerEx.getInstanceEx(project).allSettings
             .filter { it.configuration.type is FlutterRunConfigurationType }
+            .filter { model.runConfiguration!!.name == it.configuration.name }
             .forEach { checkSettings(it, dartDefineString) }
     }
 
@@ -97,24 +120,24 @@ class DefineEnvForProjectTask(
         val configuration = setting.configuration as? SdkRunConfig
         val fields = configuration!!.fields
 
-        var oldArgs = (fields.additionalArgs ?: "")
+        val oldArgs = (fields.additionalArgs ?: "")
 
-        var retainedArgs = oldArgs
+        val retainedArgs = oldArgs
             .replace("&quot;", "\"")
             .replace(Regex("""--dart-define=[^ "]+(["\'])([^"\'])+(["\'])"""), "")
             .replace(Regex("""--dart-define=[^ "]+"""), "")
             .replace(Regex("\\s+"), " ")
             .trim()
 
-        var args = mutableListOf<String>()
+        val args = mutableListOf<String>()
 
-        if (!retainedArgs.isNullOrBlank()) {
+        if (retainedArgs.isNotBlank()) {
             args.add(retainedArgs)
         }
 
         args.add(defineString)
 
-        var finalArgs = Joiner.on(" ").join(args)
+        val finalArgs = Joiner.on(" ").join(args)
         fields.additionalArgs = finalArgs
     }
 }

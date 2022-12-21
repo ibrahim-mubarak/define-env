@@ -1,11 +1,11 @@
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.7.20"
-    id("org.jetbrains.intellij") version "1.10.1"
+    id("org.jetbrains.intellij") version "1.11.0"
 }
 
 group = "com.flrx.define_env"
-version = "1.0-SNAPSHOT"
+version = "0.4.2"
 
 repositories {
     mavenCentral()
@@ -31,10 +31,14 @@ tasks {
         kotlinOptions.jvmTarget = "11"
     }
 
+    buildSearchableOptions {
+        enabled = false
+    }
+
     patchPluginXml {
         sinceBuild.set("213")
         untilBuild.set("213.*")
-        version.set("0.4.1")
+        version.set("$version")
     }
 
     signPlugin {

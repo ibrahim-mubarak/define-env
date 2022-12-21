@@ -32,10 +32,5 @@ fun Process.readError(): String {
 }
 
 fun ProcessBuilder.addPathToEnv(path:String) {
-    /// Add Dart SDK to PATH
-    val envPath = System.getenv("PATH")
-
-    environment()["PATH"] = path + File.pathSeparator + envPath
-
     environment()["PATH"] = path + File.pathSeparator +environment()["PATH"]
 }

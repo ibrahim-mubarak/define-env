@@ -27,12 +27,20 @@
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <vfs.asyncListener
-                implementation="com.flrx.define_env.EnvFileListener"/>
+                implementation="com.flrx.define_env.listeners.EnvFileListener"/>
+
+        <toolWindow id="Define Env"
+                    anchor="right"
+                    factoryClass="com.flrx.define_env.tool.DefineEnvToolWindowFactory"
+        >
+        </toolWindow>
+
     </extensions>
+
 
     <projectListeners>
         <listener
-                class="com.flrx.define_env.EnvFileListener"
+                class="com.flrx.define_env.listeners.EnvFileListener"
                 topic="com.intellij.openapi.vfs.AsyncFileListener"
         />
     </projectListeners>
